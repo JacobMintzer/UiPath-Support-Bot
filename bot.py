@@ -4,6 +4,8 @@ Python Slack Bot class for use with the pythOnBoarding app
 """
 import os
 import json
+import tree
+import node
 from pprint import pprint
 from slackclient import SlackClient
 
@@ -20,6 +22,7 @@ class Bot(object):
 		super(Bot, self).__init__()
 		data = json.load(open('credentials.json'))
 		self.name = "SupportBot"
+		self.tree=Tree()
 		#self.emoji = ":ui:"
 
 		# When we instantiate a new bot object, we can access the app
@@ -129,7 +132,7 @@ class Bot(object):
 		# message object which we'll use to update the message after a user
 		# has completed an onboarding task.
 
-	def sendInteractive(self, team_id, user_id, channel, txt, node_id="unknown", dm=False):
+	def sendInteractive(self, team_id, user_id, channel, node_id="1"):
 		if self.messages.get(team_id):
 			# Then we'll update the message dictionary with a key for the
 			# user id we've recieved and a value of a new message object
@@ -148,16 +151,17 @@ class Bot(object):
 
 			post_message=self.client.api_call("chat.postMessage",
 											channel=ch,
-											#username=self.name,
+											username=self.name,
 											#icon_emoji=self.emoji,
-											text=txt,
+											#text=txt,
 											)
 		else:
 			post_message = self.client.api_call("chat.postMessage",
 											channel=channel,
 											username=self.name,
+											attachments=[self.tree.findNodeByID(node_id)]
 											#icon_emoji=self.emoji,
-											text=txt,
+											#text=txt,
 											)
 
 	def onboarding_message(self, team_id, user_id):

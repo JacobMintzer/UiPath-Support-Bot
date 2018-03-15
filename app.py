@@ -145,6 +145,16 @@ def thanks():
 	pyBot.auth(code_arg)
 	return render_template("thanks.html")
 
+@app.route("/answering", methods=["GET", "POST"])
+def hearAnswer():
+	"""
+	this is the response that the user will send from the interactive message. 
+	This will have the information on the next node, which will be sent to the 
+	same location the message came from
+	"""
+	ans=json.loads(request.data)
+	pyBot.sendInteractive(ans["team"]["id"],ans["user"]["id"],ans["channel"]["id"],node_id=ans["actions"][0]["selected_options"][0]["value"])
+
 
 @app.route("/listening", methods=["GET", "POST"])
 def hears():
