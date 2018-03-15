@@ -16,3 +16,6 @@ def help(bot,event,args=""):
 
 def helpm(bot,event,args=""):
 	bot.send_message(_team(event),_user(event),_channel(event),"this is a help message",dm=True)
+
+def interactive(bot,event):
+	bot.sendInteractive(_team(event),_user(event),_channel(event),"this is a help message")

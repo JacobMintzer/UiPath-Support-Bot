@@ -1,0 +1,18 @@
+{
+	"_id":1,
+	"Content": "",
+	"Question" :"Is your workflow compiling?",
+	"Children":
+	[
+			2,
+			3
+	],
+	"Parent":0,
+	"Answers":
+	[
+		"Yes",
+		"No"
+	]
+
+
+}

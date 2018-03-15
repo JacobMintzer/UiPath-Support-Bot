@@ -20,7 +20,7 @@ class Bot(object):
 		super(Bot, self).__init__()
 		data = json.load(open('credentials.json'))
 		self.name = "SupportBot"
-		self.emoji = ":ui:"
+		#self.emoji = ":ui:"
 
 		# When we instantiate a new bot object, we can access the app
 		# credentials we set earlier in our local development environment.
@@ -128,6 +128,37 @@ class Bot(object):
 		# We'll save the timestamp of the message we've just posted on the
 		# message object which we'll use to update the message after a user
 		# has completed an onboarding task.
+
+	def sendInteractive(self, team_id, user_id, channel, txt, node_id="unknown", dm=False):
+		if self.messages.get(team_id):
+			# Then we'll update the message dictionary with a key for the
+			# user id we've recieved and a value of a new message object
+			self.messages[team_id].update({user_id:node_id})
+		else:
+			# If there aren't any message for that team, we'll add a dictionary
+			# of messages for that team id on our Bot's messages attribute
+			# and we'll add the first message object to the dictionary with
+			# the user's id as a key for easy access later.
+			self.messages[team_id] = {user_id: node_id}
+		if dm:
+			self.messages[team_id][user_id]
+			# Then we'll set that message object's channel attribute to the DM
+			# of the user we'll communicate with
+			ch = self.open_dm(user_id)
+
+			post_message=self.client.api_call("chat.postMessage",
+											channel=ch,
+											#username=self.name,
+											#icon_emoji=self.emoji,
+											text=txt,
+											)
+		else:
+			post_message = self.client.api_call("chat.postMessage",
+											channel=channel,
+											username=self.name,
+											#icon_emoji=self.emoji,
+											text=txt,
+											)
 
 	def onboarding_message(self, team_id, user_id):
 		"""
