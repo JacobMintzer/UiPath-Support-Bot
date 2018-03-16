@@ -10,12 +10,12 @@ def _user(event):
 def _channel(event):
 	return event["event"]["channel"]
 
-def help(bot,event,args=""):
+def i_need_help(bot,event,args=""):
 	bot.send_message(_team(event),_user(event),_channel(event),"this is a help message")
 
 
 def helpm(bot,event,args=""):
 	bot.send_message(_team(event),_user(event),_channel(event),"this is a help message",dm=True)
 
-def interactive(bot,event):
-	bot.sendInteractive(_team(event),_user(event),_channel(event),"this is a help message")
+def help(bot,event,args=""):
+	bot.sendInteractive(_team(event),_user(event),_channel(event))

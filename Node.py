@@ -30,7 +30,7 @@ class Node:
 		return self.question
 
 	def getMessage(self):
-		data=json.load(open("interactiveMessage.json","r").read())
+		data=json.load(open("interactiveMessage.json","r"))
 		data["text"]=self.content
 		if len(self.children)<1:
 			data["attachments"]=[{}]
@@ -40,4 +40,4 @@ class Node:
 			for (answerText, answerContent) in zip(self.answers,self.children):
 				data["attachments"][0]["actions"][0]["options"].append({"text":answerText,"value":answerContent})
 		response=json.dumps(data)
-		return response
+		return data

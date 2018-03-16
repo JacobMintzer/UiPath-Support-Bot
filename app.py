@@ -145,16 +145,19 @@ def thanks():
 	pyBot.auth(code_arg)
 	return render_template("thanks.html")
 
-@app.route("/answering", methods=["GET", "POST"])
+@app.route("/ans", methods=["GET", "POST"])
 def hearAnswer():
 	"""
 	this is the response that the user will send from the interactive message. 
 	This will have the information on the next node, which will be sent to the 
 	same location the message came from
 	"""
-	ans=json.loads(request.data)
+	print("news team, assemble ")
+	ans = json.loads(request.form["payload"])
+	#print (type(slack_event))
+	#pprint (request.data)
 	pyBot.sendInteractive(ans["team"]["id"],ans["user"]["id"],ans["channel"]["id"],node_id=ans["actions"][0]["selected_options"][0]["value"])
-
+	#return jsonify(result={"status": 200})
 
 @app.route("/listening", methods=["GET", "POST"])
 def hears():
@@ -163,7 +166,8 @@ def hears():
 	handler helper function to route events to our Bot.
 	"""
 	slack_event = json.loads(request.data)
-
+	#print (type(request.data))
+	
 	# ============= Slack URL Verification ============ #
 	# In order to verify the url of our endpoint, Slack will send a challenge
 	# token in a request and check for this token in the response our endpoint

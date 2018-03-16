@@ -4,8 +4,8 @@ Python Slack Bot class for use with the pythOnBoarding app
 """
 import os
 import json
-import tree
-import node
+from Tree import Tree
+from Node import Node
 from pprint import pprint
 from slackclient import SlackClient
 
@@ -132,7 +132,8 @@ class Bot(object):
 		# message object which we'll use to update the message after a user
 		# has completed an onboarding task.
 
-	def sendInteractive(self, team_id, user_id, channel, node_id="1"):
+	def sendInteractive(self, team_id, user_id, channel, node_id="1",dm=False):
+		print("interactive")
 		if self.messages.get(team_id):
 			# Then we'll update the message dictionary with a key for the
 			# user id we've recieved and a value of a new message object
@@ -143,6 +144,7 @@ class Bot(object):
 			# and we'll add the first message object to the dictionary with
 			# the user's id as a key for easy access later.
 			self.messages[team_id] = {user_id: node_id}
+
 		if dm:
 			self.messages[team_id][user_id]
 			# Then we'll set that message object's channel attribute to the DM
@@ -153,15 +155,15 @@ class Bot(object):
 											channel=ch,
 											username=self.name,
 											#icon_emoji=self.emoji,
-											#text=txt,
+											text="dm",
 											)
 		else:
 			post_message = self.client.api_call("chat.postMessage",
 											channel=channel,
 											username=self.name,
-											attachments=[self.tree.findNodeByID(node_id)]
+											attachments=[self.tree.findNodeByID(node_id).getMessage()["attachments"][0]],
 											#icon_emoji=self.emoji,
-											#text=txt,
+											text=self.tree.findNodeByID(node_id).getMessage()["text"],
 											)
 
 	def onboarding_message(self, team_id, user_id):
