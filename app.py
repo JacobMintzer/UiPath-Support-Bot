@@ -57,10 +57,9 @@ def _event_handler(event_type, slack_event):
 	elif event_type == "team_join":
 		print ("Someone joined")
 		user_id = slack_event["event"]["user"]["id"]
-		# Send the onboarding message
+	# Send the onboarding message
 		pyBot.onboarding_message(team_id, user_id)
 		return make_response("Welcome Message Sent", 200,)
-
 	# ============== Share Message Events ============= #
 	# If the user has shared the onboarding message, the event type will be
 	# message. We'll also need to check that this is a message that has been
@@ -147,16 +146,31 @@ def thanks():
 
 @app.route("/ans", methods=["GET", "POST"])
 def hearAnswer():
+	print ("hearing search response")
 	"""
 	this is the response that the user will send from the interactive message. 
 	This will have the information on the next node, which will be sent to the 
 	same location the message came from
 	"""
-	print("news team, assemble ")
 	ans = json.loads(request.form["payload"])
+	#pprint(ans)
 	#print (type(slack_event))
 	#pprint (request.data)
-	pyBot.sendInteractive(ans["team"]["id"],ans["user"]["id"],ans["channel"]["id"],node_id=ans["actions"][0]["selected_options"][0]["value"])
+	if ans["actions"][0]["selected_options"][0]["value"].isdigit():
+		print("if 1")
+		pyBot.sendTreeNode(ans["team"]["id"],ans["user"]["id"],ans["channel"]["id"],node_id=ans["actions"][0]["selected_options"][0]["value"])
+	elif ans["actions"][0]["selected_options"][0]["value"].startswith("s"):
+		print(ans["actions"][0]["selected_options"][0]["value"])
+		nodeList= ans["actions"][0]["selected_options"][0]["value"].replace("s","").split("_")
+		print ("num args is "+str(len(nodeList)))
+		node=nodeList.pop(0)
+		nodeListString="s"+"_".join(nodeList)
+		print (len(nodeList))
+		#if len(nodeList)<1:
+		pyBot.sendSolo(ans["team"]["id"],ans["user"]["id"],ans["channel"]["id"],node,nodeListString,dm=True,)
+	else:
+		print (ans["actions"][0]["selected_options"][0]["value"])
+	return make_response("", 200,)
 	#return jsonify(result={"status": 200})
 
 @app.route("/listening", methods=["GET", "POST"])

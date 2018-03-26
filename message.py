@@ -24,13 +24,13 @@ class Message(object):
 							self.pin_attachment,
 							self.share_attachment]
 
-	def create_attachments(self):
+	def create_attachments(self,attachment):
 		"""
 		Open JSON message attachments file and create attachments for
 		onboarding message. Saves a dictionary of formatted attachments on
 		the bot object.
 		"""
-		with open('welcome.json') as json_file:
+		with open(attachment) as json_file:
 			json_dict = yaml.safe_load(json_file)
 			json_attachments = json_dict["attachments"]
 			[self.attachments[i].update(json_attachments[i]) for i

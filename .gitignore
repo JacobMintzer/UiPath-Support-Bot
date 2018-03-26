@@ -1,1 +1,6 @@
 credentials.json
+clean_files/
+__pycache__/
+*.pyc
+templates/
+welcome.json

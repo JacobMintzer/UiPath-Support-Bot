@@ -132,7 +132,7 @@ class Bot(object):
 		# message object which we'll use to update the message after a user
 		# has completed an onboarding task.
 
-	def sendInteractive(self, team_id, user_id, channel, node_id="1",dm=False):
+	def sendTreeNode(self, team_id, user_id, channel, node_id="1",dm=False):
 		print("interactive")
 		if self.messages.get(team_id):
 			# Then we'll update the message dictionary with a key for the
@@ -154,8 +154,9 @@ class Bot(object):
 			post_message=self.client.api_call("chat.postMessage",
 											channel=ch,
 											username=self.name,
+											attachments=[self.tree.findNodeByID(node_id).getMessage()["attachments"][0]],
 											#icon_emoji=self.emoji,
-											text="dm",
+											text=self.tree.findNodeByID(node_id).getMessage()["text"],
 											)
 		else:
 			post_message = self.client.api_call("chat.postMessage",
@@ -165,6 +166,67 @@ class Bot(object):
 											#icon_emoji=self.emoji,
 											text=self.tree.findNodeByID(node_id).getMessage()["text"],
 											)
+	
+	def sendSolo(self, team_id, user_id, channel, node, nodeList,dm=False):
+		if len(node) <1:
+			node=None
+		elif isinstance(node,str):
+			node=self.tree.findNodeByID(ID=node,tree="internal")
+		else:
+			node=Node(node)
+		if self.messages.get(team_id) and node is not None:
+			# Then we'll update the message dictionary with a key for the
+			# user id we've recieved and a value of a new message object
+			self.messages[team_id].update({user_id:node.getIDRef()})
+			att=node.getMessage()["attachments"][0]
+			att["actions"][0]["options"].append({"text":"No","value":nodeList})
+		elif node is not None:
+			# If there aren't any message for that team, we'll add a dictionary
+			# of messages for that team id on our Bot's messages attribute
+			# and we'll add the first message object to the dictionary with
+			# the user's id as a key for easy access later.
+			self.messages[team_id] = {user_id: node.getIDRef()}
+			att=node.getMessage()["attachments"][0]
+			att["actions"][0]["options"].append({"text":"No","value":nodeList})
+
+		if dm:
+			#self.messages[team_id][user_id]
+			# Then we'll set that message object's channel attribute to the DM
+			# of the user we'll communicate with
+			ch = self.open_dm(user_id)
+			#pprint(att)
+			if node is None:
+				post_message=self.client.api_call("chat.postMessage",
+											channel=ch,
+											username=self.name,
+											#icon_emoji=self.emoji,
+											text="Sorry, I'm not sure",
+											)
+			else:
+				post_message=self.client.api_call("chat.postMessage",
+											channel=ch,
+											username=self.name,
+											attachments=[att],
+											#icon_emoji=self.emoji,
+											text=node.getContent(),
+											)
+		else:
+			if node is None:
+				post_message = self.client.api_call("chat.postMessage",
+											channel=channel,
+											username=self.name,
+											#icon_emoji=self.emoji,
+											text="Sorry, I'm not sure",
+											)
+			else:
+				post_message = self.client.api_call("chat.postMessage",
+											channel=channel,
+											username=self.name,
+											attachments=[],
+											#icon_emoji=self.emoji,
+											text=node.getContent(),
+											)
+
 
 	def onboarding_message(self, team_id, user_id):
 		"""
